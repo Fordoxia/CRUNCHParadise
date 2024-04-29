@@ -99,6 +99,7 @@
 /obj/item/trash/liquidfood
 	name = "\improper \"LiquidFood\" ration"
 	icon_state = "liquidfood"
+	desc = "Someone actually ate this!?"
 
 /obj/item/trash/can
 	name = "crushed can"

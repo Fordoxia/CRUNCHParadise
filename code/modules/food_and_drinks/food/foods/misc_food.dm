@@ -300,11 +300,3 @@
 		unpopped = max(0, unpopped-1)
 	..()
 
-/obj/item/food/snacks/liquidfood
-	name = "\improper LiquidFood ration"
-	desc = "A prepackaged grey slurry of all the essential nutrients for a spacefarer on the go. Should this be crunchy?"
-	icon_state = "liquidfood"
-	trash = /obj/item/trash/liquidfood
-	filling_color = "#A8A8A8"
-	bitesize = 4
-	list_reagents = list("nutriment" = 20, "iron" = 3, "vitamin" = 2)

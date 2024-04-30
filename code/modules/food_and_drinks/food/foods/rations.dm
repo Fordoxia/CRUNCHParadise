@@ -17,12 +17,26 @@ CONTENTS:
 	icon_state = "liquidfood"
 	/// For rations with removable packaging.
 	var/opened = FALSE
+	/// Icon to swap to when the packaging is opened.
+	var/opened_icon = "liquidfood"
+
+
+/obj/item/food/snacks/rations/attack(mob/M, mob/user, def_zone)
+	if(!opened)
+		to_chat(user, "<span class='warning'>You need to open the packaging before you can eat this.</span>")
+		return
+	. = ..()
 
 /obj/item/food/snacks/rations/attack_self(mob/user)
 	if(!opened)
-		to_chat("<span class = 'notice'>You need to open the packaging before you can eat this.</span>")
-		return
+		opened = TRUE
+		update_icon_state()
+		playsound(loc, 'sound/items/poster_ripped.ogg', 50, TRUE, -5)
+		to_chat(user, "<span class='notice'>You tear open the packaging of [src].</span>")
 	. = ..()
+
+/obj/item/food/snacks/rations/update_icon_state()
+	icon_state = opened_icon
 
 /obj/item/food/snacks/rations/liquidfood
 	name = "LiquidFood ration packet"
@@ -31,8 +45,7 @@ CONTENTS:
 	trash = /obj/item/trash/liquidfood
 	filling_color = "#A8A8A8"
 	list_reagents = list("nutriment" = 20, "iron" = 3, "vitamin" = 2)
-	tastes = list("chemicals" = 2, "mush" = 2, "artificial vanilla, struggling to reach your tastebuds" = 1)
-	var/opened = TRUE
+	tastes = list("chemicals" = 3, "mush" = 2, "artificial vanilla, struggling to reach your tastebuds" = 1)
 
 /obj/item/food/snacks/rations/liquidfood/examine_more(mob/user)
 	. = ..()
@@ -240,7 +253,7 @@ CONTENTS:
 		/obj/item/storage/fancy/cigarettes/,
 		/obj/item/storage/fancy/matches,
 		/obj/item/match,
-		/obj/item/kitchen/utensil/spoon
+		/obj/item/kitchen/utensil/pspoon/mre
 	)
 	var/list/menu_option
 	var/main_food

@@ -1,6 +1,6 @@
 /*
 CONTENTS:
-1. BASIC RATIONS
+1. STANDALONE RATIONS
 2. MRE MAINS 		// Yes, I made an entire set of menus based on real MREs for this. IMMERSION! - CRUNCH
 3. MRE SIDES
 4. MRE SNACKS
@@ -8,9 +8,9 @@ CONTENTS:
 6. MRE
 */
 
-////////////////////
-/// BASIC RATIONS //
-////////////////////
+//////////////////////////
+/// STANDALONE RATIONS ///
+//////////////////////////
 /obj/item/food/snacks/rations
 	name = "arbitrary ration"
 	desc = "If you can see this, make an issue report on GitHub. Something went wrong!"
@@ -32,6 +32,7 @@ CONTENTS:
 	filling_color = "#A8A8A8"
 	list_reagents = list("nutriment" = 20, "iron" = 3, "vitamin" = 2)
 	tastes = list("chemicals" = 2, "mush" = 2, "artificial vanilla, struggling to reach your tastebuds" = 1)
+	var/opened = TRUE
 
 /obj/item/food/snacks/rations/liquidfood/examine_more(mob/user)
 	. = ..()
@@ -40,7 +41,7 @@ CONTENTS:
 	Lightweight, compact, requiring no preperation, able to be consumed on the move, full of nutrition that is fully absorbed by all humanoid species, cheap and easy to mass manufacture.<br><br>\
 	Unfortunately, the TSF's trials of the new ration revealed that it was almost universally lothed by anyone that consumed it. Whilst it was ultimately rejected, \
 	UltraFood simply turned around and started marketing to penny-pinching megacorporations that didn't care about that particular detail<br><br>\
-	Like the one you work for..."
+	Like the one <b>you</b> work for..."
 
 /obj/item/food/snacks/rations/nutrient_prism
 	name = "type I survival bar"
@@ -259,6 +260,13 @@ CONTENTS:
 	. += "<span class = 'notice'>This one contains the [menu_option] menu.</span>"
 	if(menu_option == "Cheese & Veggie Omlette")
 		. += "<span class = 'warning'>Looks like you'll be going hungry tonight...</span>"
+
+/obj/item/storage/box/mre/examine_more(mob/user)
+	. = ..()
+	. += "The MRE is a lightweight, multi-component field ration used by the armed forces of the Trans-Solar Federation. The food is fortified with additional vitamins and nutrients, and designed with \
+	a minimum shelf life of 10 years, it's not exactly the most appetising thing out there, how appealing the food is can vary a lot, but it'll refill your energy after a strenuous day's work.<br><br>\
+	In addition to being used in all branches of the armed forces, it is also distributed as food aid in disaster zones, and can be bought from surplus sales. \
+	Frequently bought by preppers, explorers, and colonists heading out to the frontier."
 
 /obj/item/storage/box/mre/populate_contents()
 	new main_food(src)

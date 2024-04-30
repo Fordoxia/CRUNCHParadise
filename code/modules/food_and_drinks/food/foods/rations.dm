@@ -273,7 +273,7 @@ CONTENTS:
 	new side_food(src)
 	new snack_food(src)
 	new dessert_food(src)
-	new /obj/item/kitchen/utensil/spoon(src)
+	new /obj/item/kitchen/utensil/pspoon/mre(src)
 	new /obj/item/reagent_containers/glass/beaker/waterbottle(src)
 	new /obj/item/storage/fancy/cigarettes/cigpack_robust(src)
 	new /obj/item/storage/fancy/matches(src)

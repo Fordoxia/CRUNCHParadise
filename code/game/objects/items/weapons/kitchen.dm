@@ -87,6 +87,14 @@
 	icon_state = "pspoon"
 	attack_verb = list("attacked", "poked")
 
+/obj/item/kitchen/utensil/pspoon/mre
+	name = "M3 spoon, individual"
+	desc = "A surprisingly robust spoon for eating rations with. Also doubles as a shank if you get ambushed during dinner."
+	icon_state = "spoon"
+	hitsound = 'sound/weapons/bladeslice.ogg'
+	force = 10
+	sharp = TRUE
+	attack_verb = list("attacked", "stabbed", "shanked", "shivved")
 /obj/item/kitchen/utensil/spork
 	name = "spork"
 	desc = "It's a spork. Marvel at its innovative design."

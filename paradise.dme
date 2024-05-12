@@ -1209,6 +1209,7 @@
 #include "code\game\objects\items\weapons\storage\garment.dm"
 #include "code\game\objects\items\weapons\storage\internal.dm"
 #include "code\game\objects\items\weapons\storage\lockbox.dm"
+#include "code\game\objects\items\weapons\storage\ration_kit.dm"
 #include "code\game\objects\items\weapons\storage\secure.dm"
 #include "code\game\objects\items\weapons\storage\storage_base.dm"
 #include "code\game\objects\items\weapons\storage\surgical_tray.dm"

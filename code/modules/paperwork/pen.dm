@@ -3,7 +3,9 @@
  *	1. PENS
  *	2. SLEEPYPENS
  *	3. E-DAGGERS
-	4. POISON PEN
+ *	4. POISON PEN
+ *	5. CHAMELEON PEN
+ *	6. GEAR PENS
  */
 
 
@@ -23,6 +25,7 @@
 	materials = list(MAT_METAL=10)
 	var/colour = "black"	//what colour the ink is!
 	pressure_resistance = 2
+	new_attack_chain = TRUE
 
 /obj/item/pen/suicide_act(mob/user)
 	to_chat(viewers(user), "<span class='suicide'>[user] starts scribbling numbers over [user.p_themselves()] with [src]! It looks like [user.p_theyre()] trying to commit sudoku!</span>")
@@ -74,7 +77,10 @@
 		playsound(loc, 'sound/effects/pop.ogg', 50, 1)
 		update_icon()
 
-/obj/item/pen/multi/attack_self__legacy__attackchain(mob/living/user as mob)
+/obj/item/pen/multi/activate_self(mob/user)
+	if(..())
+		return FINISH_ATTACK
+
 	select_colour(user)
 
 /obj/item/pen/multi/update_overlays()
@@ -139,19 +145,23 @@
 	desc = "An expensive-looking pen only issued to heads of cargo."
 	icon_state = "pen_qm"
 
-//  SLEEPYPEN
+// MARK: Sleepypen
 
 /obj/item/pen/sleepy
 	container_type = OPENCONTAINER
 	origin_tech = "engineering=4;syndicate=2"
 	var/transfer_amount = 50
 
-/obj/item/pen/sleepy/attack__legacy__attackchain(mob/living/M, mob/user)
-	if(!istype(M))
+/obj/item/pen/sleepy/pre_attack(atom/A, mob/living/user, params)
+	. = ..()
+
+	if(!iscarbon(A))
 		return
 
-	if(!M.can_inject(user, TRUE))
-		return
+	var/mob/living/carbon/target = A
+	if(!target.can_inject(user, TRUE))
+		return FINISH_ATTACK
+
 	var/transfered = 0
 	var/contained = list()
 
@@ -159,12 +169,12 @@
 		var/datum/reagent/reagent = R
 		contained += "[round(reagent.volume, 0.01)]u [reagent]"
 
-	if(reagents.total_volume && M.reagents)
+	if(reagents.total_volume && target.reagents)
 		var/fraction = min(transfer_amount / reagents.total_volume, 1)
-		reagents.reaction(M, REAGENT_INGEST, fraction)
-		transfered = reagents.trans_to(M, transfer_amount)
-	to_chat(user, "<span class='warning'>You sneakily stab [M] with the pen.</span>")
-	add_attack_logs(user, M, "Stabbed with (sleepy) [src]. [transfered]u of reagents transfered from pen containing [english_list(contained)].")
+		reagents.reaction(target, REAGENT_INGEST, fraction)
+		transfered = reagents.trans_to(target, transfer_amount)
+	to_chat(user, "<span class='warning'>You sneakily stab [target] with the pen.</span>")
+	add_attack_logs(user, target, "Stabbed with (sleepy) [src]. [transfered]u of reagents transfered from pen containing [english_list(contained)].")
 	return TRUE
 
 /obj/item/pen/sleepy/Initialize(mapload)
@@ -204,7 +214,7 @@
 	desc = "Used to stealthily inject targets. Comes loaded with ketamine but can be refilled with other chemicals. This one isn't disguised."
 	icon_state = "pen_syndie"
 
-// E-DAGGER
+// MARK: E-Dagger
 
 /obj/item/pen/edagger
 	origin_tech = "combat=3;syndicate=1"
@@ -216,19 +226,24 @@
 	armour_penetration_flat = 20
 	throw_speed = 4
 
-/obj/item/pen/edagger/attack__legacy__attackchain(mob/living/M, mob/living/user, def_zone)
-	if(cigarette_lighter_act(user, M))
-		return
+/obj/item/pen/edagger/interact_with_atom(atom/target, mob/living/user, list/modifiers)
+	if(cigarette_lighter_act(user, target))
+		return ITEM_INTERACT_COMPLETE
+
+	.. ()
+
+/obj/item/pen/edagger/attack(mob/living/target, mob/living/user, params)
+	. = ..()
 
 	var/extra_force_applied = FALSE
-	if(active && user.dir == M.dir && !HAS_TRAIT(M, TRAIT_FLOORED) && user != M)
+	if(active && user.dir == target.dir && !HAS_TRAIT(target, TRAIT_FLOORED) && user != target)
 		force += backstab_damage
 		extra_force_applied = TRUE
-		add_attack_logs(user, M, "Backstabbed with [src]", ATKLOG_ALL)
-		M.apply_damage(40, STAMINA) //Just enough to slow
-		M.KnockDown(2 SECONDS)
-		M.visible_message(
-			"<span class='warning'>[user] stabs [M] in the back!</span>",
+		add_attack_logs(user, target, "Backstabbed with [src]", ATKLOG_ALL)
+		target.apply_damage(40, STAMINA) //Just enough to slow
+		target.KnockDown(2 SECONDS)
+		target.visible_message(
+			"<span class='warning'>[user] stabs [target] in the back!</span>",
 			"<span class='userdanger'>[user] stabs you in the back! The energy blade makes you collapse in pain!</span>"
 		)
 
@@ -270,7 +285,10 @@
 /obj/item/pen/edagger/get_clamped_volume() //So the parent proc of attack isn't the loudest sound known to man
 	return FALSE
 
-/obj/item/pen/edagger/attack_self__legacy__attackchain(mob/living/user)
+/obj/item/pen/edagger/activate_self(mob/user)
+	if(..())
+		return FINISH_ATTACK
+
 	if(active)
 		active = FALSE
 		force = initial(force)
@@ -309,12 +327,15 @@
 /obj/item/proc/on_write(obj/item/paper/P, mob/user)
 	return
 
-// POISON PEN
+// MARK: Poison Pen
 
 /obj/item/pen/multi/poison
 	var/current_poison = null
 
-/obj/item/pen/multi/poison/attack_self__legacy__attackchain(mob/living/user)
+/obj/item/pen/multi/poison/activate_self(mob/user)
+	if(..())
+		return FINISH_ATTACK
+
 	. = ..()
 	switch(colour)
 		if("black")
@@ -339,16 +360,45 @@
 			add_attack_logs(user, P, "Poison pen'ed")
 			to_chat(user, "<span class='warning'>You apply the poison to [P].</span>")
 
-// MARK: CHAMELEON PEN
+// MARK: Chameleon Pen
 /obj/item/pen/chameleon
 	var/forge_name
 
-/obj/item/pen/chameleon/attack_self__legacy__attackchain(mob/user)
+/obj/item/pen/chameleon/activate_self(mob/user)
+	if(..())
+		return FINISH_ATTACK
+
 	if(!iscarbon(user))
-		return
+		return FINISH_ATTACK
 
 	if(!Adjacent(user) || user.incapacitated())
-		return
+		return FINISH_ATTACK
 
 	forge_name = tgui_input_text(user, "Enter the name of the person whose signature you want to forge", "Forge name", max_length = MAX_NAME_LEN)
 
+// MARK: Gear pen
+// For inconspiciously carrying around highly incriminating items until they are actually required.
+/obj/item/pen/gear_pen
+	origin_tech = "engineering=3;bluespace=3;syndicate=1" // Same as bluespace shelter capsule, but with added crime.
+	var/used = FALSE
+	var/payload = /obj/item/storage/box/syndie_kit/nuke
+
+/obj/item/pen/gear_pen/examine(mob/user)
+	. = ..()
+	if(isAntag(user) && Adjacent(user))
+		. += "<span class='notice'>There is a hidden compartment in the body of the pen.</span>"
+		. += "<span class='notice'>The compartment [used ? "is empty." : "contains a bluespace capsule that can be opened to retrieve its contents."]</span>"
+
+/obj/item/pen/gear_pen/activate_self(mob/user)
+	if(..())
+		return	FINISH_ATTACK
+
+	if(isAntag(user) && !used)
+		user.put_in_hands(new payload(src))
+		to_chat(user, "<span class='notice>You crack open the bluespace capsule and pull out the contents.</span>")
+		playsound(user, 'sound/effects/phasein.ogg', 20, TRUE, ignore_walls = FALSE)
+		used = TRUE
+		origin_tech = "" // No capsule, no tech!
+	
+/obj/item/pen/gear_pen/supermatter
+	payload = /obj/item/storage/box/syndie_kit/supermatter

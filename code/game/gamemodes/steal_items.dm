@@ -140,8 +140,8 @@
 	name = "a supermatter sliver"
 	typepath = /obj/item/nuke_core/supermatter_sliver
 	protected_jobs = list("Chief Engineer", "Station Engineer", "Life Support Specialist") //Unlike other steal objectives, all jobs in the department have easy access, and would not be noticed at all stealing this
-	location_override = "Engineering. You can use the box and instructions provided to harvest the sliver"
-	special_equipment = /obj/item/storage/box/syndie_kit/supermatter
+	location_override = "Engineering. A bluespace capsule containing an extraction kit has been concealed in a pen, hide it in your PDA. Use the kit to extract a sliver from the Supermatter."
+	special_equipment = /obj/item/pen/gear_pen/supermatter
 	job_possession = FALSE //The CE / engineers / atmos techs do not carry around supermater slivers.
 
 /datum/theft_objective/supermatter_sliver/check_objective_conditions() //If there is no supermatter, you don't get the objective. Yes, one could order it from cargo, but I don't think that is fair, especially if we get a map without a supermatter
@@ -150,8 +150,8 @@
 /datum/theft_objective/plutonium_core
 	name = "the plutonium core from the station's nuclear device"
 	typepath = /obj/item/nuke_core/plutonium
-	location_override = "the Vault. You can use the box and instructions provided to remove the core, with some extra tools"
-	special_equipment = /obj/item/storage/box/syndie_kit/nuke
+	location_override = "the Vault. A bluespace capsule containing an extraction kit has been concealed in a pen, hide it in your PDA. Use the kit along with some extra tools to extract the core."
+	special_equipment = /obj/item/pen/gear_pen
 	protected_jobs = list("Quartermaster")
 	job_possession = FALSE
 

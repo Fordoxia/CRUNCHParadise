@@ -1,0 +1,151 @@
+#define MAIN_FOOD 1
+#define SIDE_FOOD 2
+#define SNACK_FOOD 3
+#define DESSERT_FOOD 4
+
+/obj/item/storage/box/mre
+	name = "Meal, Ready-to-Eat"
+	desc = "A compact SolGov-produced field ration designed to feed a soldier in active combat. Contains self-heating food packets that require no prior preperation. \
+	It meets all of the legal and technical requirements to be considered real food!"
+	icon = 'icons/obj/storage.dmi'
+	icon_state = "ration_solgov"
+	storage_slots = 8
+	drop_sound = null
+	pickup_sound = null
+	can_hold = list(
+		/obj/item/food/snacks/rations,
+		/obj/item/reagent_containers/glass/beaker/waterbottle,
+		/obj/item/clothing/mask/cigarette,
+		/obj/item/storage/fancy/cigarettes,
+		/obj/item/storage/fancy/matches,
+		/obj/item/match,
+		/obj/item/kitchen/utensil/pspoon/mre
+	)
+	/// Has anyone looked inside the MRE yet? Setting to TRUE changes the sprite and allows items to be added to the container.
+	var/opened = FALSE
+	///	Determines what set of food items will spawn in the MRE. Also alters the name and description of the MRE.
+	var/list/menu_option
+	/// Used when populating contents after doing get_menu_items().
+	var/main_food
+	/// Used when populating contents after doing get_menu_items().
+	var/side_food
+	/// Used when populating contents after doing get_menu_items().
+	var/snack_food
+	/// Used when populating contents after doing get_menu_items().
+	var/dessert_food
+
+// Prevent the plastic MRE package from magically turning into a sheet of cardboard.
+/obj/item/storage/box/mre/attack_self(mob/user)
+	return
+
+/obj/item/storage/box/mre/show_to(mob/user as mob)
+	if(!opened)
+		opened = TRUE
+		icon_state = "ration_solgov_open"
+		playsound(loc, 'sound/items/poster_ripped.ogg', 50, TRUE, -5)
+		to_chat(user, "<span class='notice'>You tear open the packaging of [src].</span>")
+	..()
+
+/obj/item/storage/box/mre/can_be_inserted(obj/item/I as obj, stop_messages = FALSE)
+	if(!opened)
+		to_chat(usr, "<span class='warning'>You need to open [src] before you can put things inside it.</span>")
+		return FALSE
+	..()
+
+/obj/item/storage/box/mre/Initialize()
+	menu_option = pick("Chicken & Cavatelli", "BBQ Pork & Rice", "Pepperoni Pizza & Cheese-Filled Crackers", "Sushi & Rice Onigiri", "Spaghetti & Meatballs", "Creamy Spinach Fettuccini", "Cheese & Veggie Omlette")
+	var/new_name = "[menu_option] [name]"
+	name = new_name
+	get_menu_items(menu_option)
+	. = ..()
+
+/obj/item/storage/box/mre/examine()
+	. = ..()
+	. += "<span class = 'notice'>This one contains the [menu_option] menu.</span>"
+	if(menu_option == "Cheese & Veggie Omlette")
+		// The Cheese & Veggie Omlette is widely considered to be the most vile, disgusting MRE menu in history.
+		. += "<span class = 'warning'>Looks like you'll be going hungry tonight...</span>"
+
+/obj/item/storage/box/mre/examine_more(mob/user)
+	. = ..()
+	. += "The MRE is a lightweight, multi-component field ration used by the armed forces of the Trans-Solar Federation. The food is fortified with additional vitamins and nutrients, \
+and designed with a minimum shelf life of 10 years. It's not exactly the most appetising thing out there, how appealing the food is can vary a lot, but it'll refill your energy after a strenuous day's work."
+	. += ""
+	. += "In addition to being used in all branches of the TSF's armed forces, it is also distributed as food aid in disaster zones, and can be bought from surplus sales. \
+Frequently bought by preppers, explorers, and colonists heading out to the frontier."
+
+/obj/item/storage/box/mre/populate_contents()
+	new main_food(src)
+	new side_food(src)
+	new snack_food(src)
+	new dessert_food(src)
+	new /obj/item/kitchen/utensil/pspoon/mre(src)
+	new /obj/item/reagent_containers/glass/beaker/waterbottle(src)
+	new /obj/item/storage/fancy/cigarettes/cigpack_robust(src)
+	new /obj/item/storage/fancy/matches(src)
+
+/**
+  * Selects one of several MRE menus based on the menu_option of the MRE. 
+  *
+  * Arguments:
+  * * menu_item_list - Static list containing the food items associated with each MRE menu option.
+  * * main_food - Takes first food item from the list for use in populate_contents().
+  * * side_food - Takes second food item from the list for use in populate_contents().
+  * * snack_food - Takes third food item from the list for use in populate_contents().
+  * * dessert_food - Takes fourth food item from the list for use in populate_contents().
+  */
+/obj/item/storage/box/mre/proc/get_menu_items()
+	var/static/list/menu_item_list = list(
+		"Chicken & Cavatelli" = list(
+			/obj/item/food/snacks/rations/mre/chicken,
+			/obj/item/food/snacks/rations/mre/cavatelli,
+			/obj/item/food/snacks/rations/mre/trail_mix,
+			/obj/item/food/snacks/rations/mre/brownie
+		),
+		"BBQ Pork & Rice" = list(
+			/obj/item/food/snacks/rations/mre/pork,
+			/obj/item/food/snacks/rations/mre/rice,
+			/obj/item/food/snacks/rations/mre/fighting_fuel,
+			/obj/item/food/snacks/rations/mre/pancake
+		),
+		"Pepperoni Pizza & Cheese-Filled Crackers" = list(
+			/obj/item/food/snacks/rations/mre/pizza,
+			/obj/item/food/snacks/rations/mre/cheese_crackers,
+			/obj/item/food/snacks/rations/mre/trail_mix,
+			/obj/item/food/snacks/rations/mre/smores
+		),
+		"Sushi & Rice Onigiri" = list(
+			/obj/item/food/snacks/rations/mre/sushi,
+			/obj/item/food/snacks/rations/mre/onigiri,
+			/obj/item/food/snacks/rations/mre/bun,
+			/obj/item/food/snacks/rations/mre/spiced_apple
+		),
+		"Spaghetti & Meatballs" = list(
+			/obj/item/food/snacks/rations/mre/spaghetti,
+			/obj/item/food/snacks/rations/mre/meatballs,
+			/obj/item/food/snacks/rations/mre/peanut_crackers,
+			/obj/item/food/snacks/rations/mre/flan
+		),
+		"Creamy Spinach Fettuccini" = list(
+			/obj/item/food/snacks/rations/mre/fettuccini,
+			/obj/item/food/snacks/rations/mre/pretzel_nugget,
+			/obj/item/food/snacks/rations/mre/fighting_fuel,
+			/obj/item/food/snacks/rations/mre/pbj
+
+		),
+		"Cheese & Veggie Omlette" = list(	// The Vomlette. The worst MRE in history.
+			/obj/item/food/snacks/rations/mre/vomlette,
+			/obj/item/food/snacks/rations/mre/cheese_crackers,
+			/obj/item/food/snacks/rations/mre/bun,
+			/obj/item/food/snacks/rations/mre/granola
+		)
+	)
+	main_food = menu_item_list[menu_option][MAIN_FOOD]
+	side_food = menu_item_list[menu_option][SIDE_FOOD]
+	snack_food = menu_item_list[menu_option][SNACK_FOOD]
+	dessert_food = menu_item_list[menu_option][DESSERT_FOOD]
+
+#undef MAIN_FOOD
+#undef SIDE_FOOD
+#undef SNACK_FOOD
+#undef DESSERT_FOOD

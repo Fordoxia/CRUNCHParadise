@@ -1,4 +1,4 @@
-// MARK:	STANDALONE RATIONS
+// MARK:	Standalone Rations
 /obj/item/food/snacks/rations
 	name = "arbitrary ration"
 	desc = "If you can see this, make an issue report on GitHub. Something went wrong!"
@@ -10,18 +10,21 @@
 	var/opened_icon = "liquidfood"
 
 /obj/item/food/snacks/rations/attack(mob/M, mob/user, def_zone)
-	if(!opened)
-		to_chat(user, "<span class='warning'>[src] cannot be eaten without removing the packaging first.</span>")
+	if(..())
 		return
-	. = ..()
 
-/obj/item/food/snacks/rations/attack_self(mob/user)
+	if(!opened)
+		to_chat(user, "<span class='warning'>[src] cannot be eaten without removing the packaging first!</span>")
+
+/obj/item/food/snacks/rations/activate_self(mob/user)
+	if(..())
+		return
+
 	if(!opened)
 		opened = TRUE
 		update_icon_state()
 		playsound(loc, 'sound/items/poster_ripped.ogg', 50, TRUE, -5)
 		to_chat(user, "<span class='notice'>You tear open the packaging of [src].</span>")
-	. = ..()
 
 /obj/item/food/snacks/rations/update_icon_state()
 	icon_state = opened_icon
@@ -84,7 +87,7 @@ Rumors are abound that the Type II may finally be on the horizon, giving a glimm
 	. = ..()
 
 
-// MARK:	MRE MAINS
+// MARK:	MRE Mains
 /obj/item/food/snacks/rations/mre/chicken
 	name = "fried chicken breast"
 	desc = "It's a little tough, but the taste is still fine."
@@ -141,7 +144,7 @@ Rumors are abound that the Type II may finally be on the horizon, giving a glimm
 	list_reagents = list("nutriment" = 10, "plantmatter" = 15)
 	tastes = list("very artifical cheese" = 3, "chemicals" = 2 , "artificial preservatives" = 1, "something resembling a vegetable" = 2)
 
-// MARK:	MRE SIDES
+// MARK:	MRE Sides
 /obj/item/food/snacks/rations/mre/cavatelli
 	name = "cavatelli pasta"
 	desc = "Lots of bits of cavatelli. Some of them are still hard and crunchy."
@@ -190,7 +193,7 @@ Rumors are abound that the Type II may finally be on the horizon, giving a glimm
 	list_reagents = list("nutriment" = 8, "plantmatter" = 1, "salt" = 5)
 	tastes = list("mustard" = 2, "tangy sweetness" = 2, "salt" = 2)
 
-// MARK:	MRE SNACKS
+// MARK:	MRE Snacks
 /obj/item/food/snacks/rations/mre/peanut_crackers
 	name = "peanut butter crackers"
 	desc = "Crackers injected with peanut butter. The crackers are liable to crumble before you can get them to your mouth."
@@ -223,7 +226,7 @@ Rumors are abound that the Type II may finally be on the horizon, giving a glimm
 	list_reagents = list("vitamin" = 6)
 	tastes = list("fruits" = 2, "nuts" = 2)
 
-// MARK:	MRE DESSERTS
+// MARK:	MRE Desserts
 /obj/item/food/snacks/rations/mre/brownie
 	name = "chocolate brownie"
 	desc = "The flavour is so good, you don't really mind that it's dry and crumbly."

@@ -3,7 +3,8 @@
 #define SNACK_FOOD 3
 #define DESSERT_FOOD 4
 
-/obj/item/storage/box/mre
+// Base type will randomly pick one of the menus.
+/obj/item/storage/mre
 	name = "Meal, Ready-to-Eat"
 	desc = "A compact SolGov-produced field ration designed to feed a soldier in active combat. Contains self-heating food packets that require no prior preperation. \
 	It meets all of the legal and technical requirements to be considered real food!"
@@ -24,7 +25,7 @@
 	/// Has anyone looked inside the MRE yet? Setting to TRUE changes the sprite and allows items to be added to the container.
 	var/opened = FALSE
 	///	Determines what set of food items will spawn in the MRE. Also alters the name and description of the MRE.
-	var/list/menu_option
+	var/menu_option
 	/// Used when populating contents after doing get_menu_items().
 	var/main_food
 	/// Used when populating contents after doing get_menu_items().
@@ -34,11 +35,7 @@
 	/// Used when populating contents after doing get_menu_items().
 	var/dessert_food
 
-// Prevent the plastic MRE package from magically turning into a sheet of cardboard.
-/obj/item/storage/box/mre/attack_self(mob/user)
-	return
-
-/obj/item/storage/box/mre/show_to(mob/user as mob)
+/obj/item/storage/mre/show_to(mob/user as mob)
 	if(!opened)
 		opened = TRUE
 		icon_state = "ration_solgov_open"
@@ -46,27 +43,28 @@
 		to_chat(user, "<span class='notice'>You tear open the packaging of [src].</span>")
 	..()
 
-/obj/item/storage/box/mre/can_be_inserted(obj/item/I as obj, stop_messages = FALSE)
+/obj/item/storage/mre/can_be_inserted(obj/item/I as obj, stop_messages = FALSE)
 	if(!opened)
 		to_chat(usr, "<span class='warning'>You need to open [src] before you can put things inside it.</span>")
 		return FALSE
 	..()
 
-/obj/item/storage/box/mre/Initialize()
-	menu_option = pick("Chicken & Cavatelli", "BBQ Pork & Rice", "Pepperoni Pizza & Cheese-Filled Crackers", "Sushi & Rice Onigiri", "Spaghetti & Meatballs", "Creamy Spinach Fettuccini", "Cheese & Veggie Omlette")
-	var/new_name = "[menu_option] [name]"
+/obj/item/storage/mre/Initialize(maploas)
+	if(!menu_option)
+		menu_option = pick("Chicken & Cavatelli", "BBQ Pork & Rice", "Pepperoni Pizza & Cheese-Filled Crackers", "Sushi & Rice Onigiri", "Spaghetti & Meatballs", "Creamy Spinach Fettuccini", "Cheese & Veggie Omlette")
+	var/new_name = "[name] ([menu_option])"
 	name = new_name
 	get_menu_items(menu_option)
 	. = ..()
 
-/obj/item/storage/box/mre/examine()
+/obj/item/storage/mre/examine()
 	. = ..()
 	. += "<span class = 'notice'>This one contains the [menu_option] menu.</span>"
 	if(menu_option == "Cheese & Veggie Omlette")
 		// The Cheese & Veggie Omlette is widely considered to be the most vile, disgusting MRE menu in history.
 		. += "<span class = 'warning'>Looks like you'll be going hungry tonight...</span>"
 
-/obj/item/storage/box/mre/examine_more(mob/user)
+/obj/item/storage/mre/examine_more(mob/user)
 	. = ..()
 	. += "The MRE is a lightweight, multi-component field ration used by the armed forces of the Trans-Solar Federation. The food is fortified with additional vitamins and nutrients, \
 and designed with a minimum shelf life of 10 years. It's not exactly the most appetising thing out there, how appealing the food is can vary a lot, but it'll refill your energy after a strenuous day's work."
@@ -74,14 +72,14 @@ and designed with a minimum shelf life of 10 years. It's not exactly the most ap
 	. += "In addition to being used in all branches of the TSF's armed forces, it is also distributed as food aid in disaster zones, and can be bought from surplus sales. \
 Frequently bought by preppers, explorers, and colonists heading out to the frontier."
 
-/obj/item/storage/box/mre/populate_contents()
+/obj/item/storage/mre/populate_contents()
 	new main_food(src)
 	new side_food(src)
 	new snack_food(src)
 	new dessert_food(src)
 	new /obj/item/kitchen/utensil/pspoon/mre(src)
 	new /obj/item/reagent_containers/glass/beaker/waterbottle(src)
-	new /obj/item/storage/fancy/cigarettes/cigpack_robust(src)
+	new /obj/item/storage/fancy/cigarettes/cigpack_solar_rays(src)
 	new /obj/item/storage/fancy/matches(src)
 
 /**
@@ -94,7 +92,7 @@ Frequently bought by preppers, explorers, and colonists heading out to the front
   * * snack_food - Takes third food item from the list for use in populate_contents().
   * * dessert_food - Takes fourth food item from the list for use in populate_contents().
   */
-/obj/item/storage/box/mre/proc/get_menu_items()
+/obj/item/storage/mre/proc/get_menu_items()
 	var/static/list/menu_item_list = list(
 		"Chicken & Cavatelli" = list(
 			/obj/item/food/snacks/rations/mre/chicken,
@@ -144,6 +142,27 @@ Frequently bought by preppers, explorers, and colonists heading out to the front
 	side_food = menu_item_list[menu_option][SIDE_FOOD]
 	snack_food = menu_item_list[menu_option][SNACK_FOOD]
 	dessert_food = menu_item_list[menu_option][DESSERT_FOOD]
+
+/obj/item/storage/mre/chicken
+	menu_option = "Chicken & Cavatelli"
+
+/obj/item/storage/mre/pork
+	menu_option = "BBQ Pork & Rice"
+
+/obj/item/storage/mre/pizza
+	menu_option = "Pepperoni Pizza & Cheese-Filled Crackers"
+
+/obj/item/storage/mre/sushi
+	menu_option = "Sushi & Rice Onigiri"
+
+/obj/item/storage/mre/spaghetti
+	menu_option = "Spaghetti & Meatballs"
+
+/obj/item/storage/mre/fettuccini
+	menu_option = "Creamy Spinach Fettuccini"
+
+/obj/item/storage/mre/vomlette
+	menu_option = "Cheese & Veggie Omlette"
 
 #undef MAIN_FOOD
 #undef SIDE_FOOD

@@ -87,6 +87,13 @@
 	icon_state = "pspoon"
 	attack_verb = list("attacked", "poked")
 
+/obj/item/kitchen/utensil/pspoon/mre
+	name = "\improper MRE spoon"
+	desc = "A military-grade plastic spoon. Robust construction, thin end towards enemy."
+	icon_state = "pspoon"
+	force = 10
+	attack_verb = list("attacked", "poked", "stabbed", "shanked")
+
 /obj/item/kitchen/utensil/spork
 	name = "spork"
 	desc = "It's a spork. Marvel at its innovative design."

@@ -284,7 +284,6 @@
 		/obj/item/food/dionaroast,
 		/obj/item/food/boiledslimecore,
 		/obj/item/food/burger/brain,
-		/obj/item/food/liquidfood,
 		/obj/item/food/burger/ghost,
 		/obj/item/food/burger/hamborger,
 		/obj/item/food/burger/ppatty/rainbow,

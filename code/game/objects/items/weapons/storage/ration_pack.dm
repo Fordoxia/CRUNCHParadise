@@ -49,11 +49,10 @@
 		return FALSE
 	..()
 
-/obj/item/storage/mre/Initialize(maploas)
+/obj/item/storage/mre/Initialize(mapload)
 	if(!menu_option)
 		menu_option = pick("Chicken & Cavatelli", "BBQ Pork & Rice", "Pepperoni Pizza & Cheese-Filled Crackers", "Sushi & Rice Onigiri", "Spaghetti & Meatballs", "Creamy Spinach Fettuccini", "Cheese & Veggie Omlette")
-	var/new_name = "[name] ([menu_option])"
-	name = new_name
+	name =  "[name] ([menu_option])"
 	get_menu_items(menu_option)
 	. = ..()
 
